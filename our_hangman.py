@@ -195,7 +195,6 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
         already_guessed.append(guess.upper())
         wrong_guesses = wrong_guesses + damage(level)
 
-        
     return wrong_guesses, encoded_word, already_guessed
 def main():
     ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
@@ -204,7 +203,7 @@ def main():
     print("Welcome to Hangman,", player_name)
     level = get_level()
     word = get_word(words, level)
-    original_word = get_word(words, level)
+    original_word = word
     encoded_word = re.sub('[0-9a-zA-Z]', '_', word)
     print(word) # Print selected word
     print(encoded_word) # Print word with _
@@ -220,8 +219,8 @@ def main():
         already_guessed = hidden_letters[2]
         index = int(wrong_guesses / get_hangman(max_wrong_guesses))
         print(HANGMAN[index])
-        print(already_guessed) # Print already guessed
-        print(hidden_letters[1], hidden_letters[0]) # Print encoded word
+        print(already_guessed)  # Print already guessed
+        print(hidden_letters[1], hidden_letters[0])  # Print encoded word
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! Do you want to play again? (y/n) ")
         if decision == "y":

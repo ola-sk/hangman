@@ -194,6 +194,7 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
     if guess_counter == 0 and guess.upper() not in already_guessed:
         already_guessed.append(guess.upper())
         wrong_guesses = wrong_guesses + damage(level)
+
         
     return wrong_guesses, encoded_word, already_guessed
 
@@ -217,9 +218,10 @@ def main():
         hidden_letters = guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
         wrong_guesses = hidden_letters[0]
         encoded_word = hidden_letters[1]
+        already_guessed = hidden_letters[2]
         index = int(wrong_guesses / get_hangman(max_wrong_guesses))
         print(HANGMAN[index])
-        print(hidden_letters[2]) # Print already guessed
+        print(already_guessed) # Print already guessed
         print(hidden_letters[1], hidden_letters[0]) # Print encoded word
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! Do you want to play again? (y/n) ")

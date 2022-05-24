@@ -207,10 +207,13 @@ def main():
     max_wrong_guesses = 21 # Must be every 7
     wrong_guesses = 0 # Starting value
     guess_counter = 0 # Starting value for loop
-    index = int(wrong_guesses / get_hangman(max_wrong_guesses))
+    print(HANGMAN[0]) # Starting Hangman
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
         hidden_letters = guess_letter(word, encoded_word, level, wrong_guesses, guess_counter)
         wrong_guesses = hidden_letters[0]
+        encoded_word = hidden_letters[1]
+        index = int(wrong_guesses / get_hangman(max_wrong_guesses))
+        print(HANGMAN[index])
         print(hidden_letters[1], hidden_letters[0])
 
         

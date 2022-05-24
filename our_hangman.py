@@ -2,6 +2,7 @@ from ast import AnnAssign
 import random
 import pyfiglet
 import re
+import string
 
 class bcolors:
     HEADER = '\033[95m'
@@ -171,27 +172,30 @@ def damage(level):
     if level == 1:
         damage = 1
     elif level == 2:
-        damage = 2
-    else:
         damage = 3
+    else:
+        damage = 6
     return damage
 
 def get_hangman(max_wrong_guesses):
     return int(max_wrong_guesses / (len(HANGMAN)-1 ))
 
-def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter):
+def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
+    az_check = string.ascii_letters
     guess = input("Please enter your guess: ")
     while len(guess) > 1:
         guess = input("Please enter only one character. ")
-
+    while guess.upper() not in az_check:
+        guess = input("Please use A-Z characters.")
     for letter in range(0, len(word)):
         if word[letter] == guess.upper():
             encoded_word = encoded_word[0:letter] + guess.upper() + encoded_word[letter+1:len(word)]
             guess_counter += 1
-    if guess_counter == 0:
+    if guess_counter == 0 and guess.upper() not in already_guessed:
+        already_guessed.append(guess.upper())
         wrong_guesses = wrong_guesses + damage(level)
         
-    return wrong_guesses, encoded_word
+    return wrong_guesses, encoded_word, already_guessed
 
 def main():
     ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
@@ -204,23 +208,25 @@ def main():
     encoded_word = re.sub('[0-9a-zA-Z]', '_', word)
     print(word) # Print selected word
     print(encoded_word) # Print word with _
-    max_wrong_guesses = 21 # Must be every 7
+    already_guessed = []
+    max_wrong_guesses = 42 # Must be every 3
     wrong_guesses = 0 # Starting value
     guess_counter = 0 # Starting value for loop
     print(HANGMAN[0]) # Starting Hangman
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
-        hidden_letters = guess_letter(word, encoded_word, level, wrong_guesses, guess_counter)
+        hidden_letters = guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
         wrong_guesses = hidden_letters[0]
         encoded_word = hidden_letters[1]
         index = int(wrong_guesses / get_hangman(max_wrong_guesses))
         print(HANGMAN[index])
-        print(hidden_letters[1], hidden_letters[0])
+        print(hidden_letters[2]) # Print already guessed
+        print(hidden_letters[1], hidden_letters[0]) # Print encoded word
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! Do you want to play again? (y/n) ")
         if decision == "y":
             main()
     else:
-        decision = input("Congratulations, you've won the game! Do you want to try again? (y/n)")
+        decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
         if decision == "y":
             main()
 

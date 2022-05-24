@@ -215,6 +215,14 @@ def main():
         index = int(wrong_guesses / get_hangman(max_wrong_guesses))
         print(HANGMAN[index])
         print(hidden_letters[1], hidden_letters[0])
+    if wrong_guesses == max_wrong_guesses:
+        decision = input("So sorry, you've failed! Do you want to play again? (y/n) ")
+        if decision == "y":
+            main()
+    else:
+        decision = input("Congratulations, you've won the game! Do you want to try again? (y/n)")
+        if decision == "y":
+            main()
 
         
         

@@ -230,9 +230,9 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
         guess = input("Please use A-Z characters.")
     for letter in range(0, len(word)):
         if word[letter] == guess.upper() or word[letter] == guess.lower():
-            if (word[letter].isupper()):
+            if word[letter].isupper():
                 guess = guess.upper()
-            elif (word[letter].islower()):
+            elif word[letter].islower():
                 guess = guess.lower()
             encoded_word = encoded_word[0:letter] + guess + encoded_word[letter + 1:len(word)]
             guess_counter += 1
@@ -290,7 +290,7 @@ def main(game_round, player_name=""):
         print(already_guessed)  # Print already guessed
         print(encoded_word, wrong_guesses)  # Print encoded word
     if wrong_guesses == max_wrong_guesses:
-        decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) "% original_word)
+        decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
         decision = input_check_play_again(decision)
         try:
             if decision.lower() == "y":

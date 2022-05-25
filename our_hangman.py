@@ -298,6 +298,8 @@ def main(game_round, player_name=""):
         print(HANGMAN[hangman_graphics_index])
         print(already_guessed)  # Print already guessed
         print(encoded_word, wrong_guesses)  # Print encoded word
+        if is_already_guessed == 1:
+            print("You have already tried this letter!")
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
         decision = input_check_play_again(decision)

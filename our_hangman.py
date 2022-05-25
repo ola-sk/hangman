@@ -221,26 +221,34 @@ def draw_word_from_list(word_list, level):
         return word
 
 
-def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
+def get_letter_input():
     az_check = string.ascii_letters
-    guess = input("Please enter your guess: ")
-    while len(guess) > 1:
-        guess = input("Please enter only one character. ")
-    while guess not in az_check:
-        guess = input("Please use A-Z characters.")
-    for letter in range(0, len(word)):
-        if word[letter] == guess.upper() or word[letter] == guess.lower():
-            if word[letter].isupper():
-                guess = guess.upper()
-            elif word[letter].islower():
-                guess = guess.lower()
-            encoded_word = encoded_word[0:letter] + guess + encoded_word[letter + 1:len(word)]
-            guess_counter += 1
-    if guess_counter == 0 and guess not in already_guessed:
-        already_guessed.append(guess.upper())
-        wrong_guesses = wrong_guesses + damage(level)
+    letter_guess_local = input("Please enter your guess: ")
+    while len(letter_guess_local) > 1:
+        letter_guess_local = input("Please enter only one character. ")
+    while letter_guess_local not in az_check:
+        letter_guess_local = input("Please use A-Z characters.")
+    return letter_guess_local
 
-    return wrong_guesses, encoded_word, already_guessed
+
+def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
+    letter_guess = get_letter_input()
+    is_already_guessed = 0
+    for index in range(0, len(word)):
+        if word[index] == letter_guess.upper() or word[index] == letter_guess.lower():
+            if word[index].isupper():
+                letter_guess = letter_guess.upper()
+            elif word[index].islower():
+                letter_guess = letter_guess.lower()
+            encoded_word = encoded_word[0:index] + letter_guess + encoded_word[index + 1:len(word)]
+            guess_counter += 1
+    if guess_counter == 0 and letter_guess.upper() not in already_guessed:
+        already_guessed.append(letter_guess.upper())
+        wrong_guesses = wrong_guesses + damage(level)
+    elif letter_guess.upper() in already_guessed:
+        is_already_guessed
+
+    return wrong_guesses, encoded_word, already_guessed, is_already_guessed
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -251,7 +259,7 @@ def input_check_play_again(decision_local=""):
     """input_check_play_again() takes a string (player input) and checks the expected format. If the string meets the
     requirements, it is returned. Otherwise the user is asked repetitively to provide a proper input and runs it against
     the checks until the input meets the requirements and only then is returned.
-    #TODO it should also with the case when player inputs 'quit'
+    # TODO it should also with the case when player inputs 'quit'
     In: str, default = ''
     Out: str decision that  is either 'Y', 'y', 'N', 'n'"""
     while decision_local.lower() != "y" and decision_local != "n":
@@ -285,6 +293,7 @@ def main(game_round, player_name=""):
         wrong_guesses = hidden_letters[0]
         encoded_word = hidden_letters[1]
         already_guessed = hidden_letters[2]
+        is_already_guessed = hidden_letters[3]
         hangman_graphics_index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[hangman_graphics_index])
         print(already_guessed)  # Print already guessed
@@ -297,6 +306,10 @@ def main(game_round, player_name=""):
                 main("fail", player_name)
             elif decision.lower() == 'n':
                 print("I hope you enjoyed the game! See you next time!")
+                # TODO: quits
+            elif decision.lower() == "quit":
+                print("Good-bye!")
+                # TODO: quits
             else:
                 raise ValueError
         except ValueError:
@@ -309,6 +322,10 @@ def main(game_round, player_name=""):
                 main("next", player_name)
             elif decision.lower() == 'n':
                 print("Thank you for your time. See you in the next one!")
+                # TODO: quits
+            elif decision.lower() == "quit":
+                print("Good-bye!")
+                # TODO: quits
             else:
                 raise ValueError
         except ValueError:

@@ -226,13 +226,17 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
     guess = input("Please enter your guess: ")
     while len(guess) > 1:
         guess = input("Please enter only one character. ")
-    while guess.upper() not in az_check:
+    while guess not in az_check:
         guess = input("Please use A-Z characters.")
     for letter in range(0, len(word)):
-        if word[letter] == guess.upper():
-            encoded_word = encoded_word[0:letter] + guess.upper() + encoded_word[letter + 1:len(word)]
+        if word[letter] == guess.upper() or word[letter] == guess.lower():
+            if (word[letter].isupper()):
+                guess = guess.upper()
+            elif (word[letter].islower()):
+                guess = guess.lower()
+            encoded_word = encoded_word[0:letter] + guess + encoded_word[letter + 1:len(word)]
             guess_counter += 1
-    if guess_counter == 0 and guess.upper() not in already_guessed:
+    if guess_counter == 0 and guess not in already_guessed:
         already_guessed.append(guess.upper())
         wrong_guesses = wrong_guesses + damage(level)
 
@@ -254,7 +258,6 @@ def main(game_round, player_name=""):
     word_base = create_word_list()
     word_to_guess = draw_word_from_list(word_base, level)
     original_word = word_to_guess
-    word_to_guess = word_to_guess.upper()
     encoded_word = re.sub('[0-9a-zA-Z]', '_', word_to_guess)
     # print(word_to_guess)  # Print selected word
     print(HANGMAN[0])  # Starting Hangman

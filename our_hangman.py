@@ -247,6 +247,18 @@ def get_hangman(max_wrong_guesses, graphics_list):
     return int(max_wrong_guesses / (len(graphics_list) - 1))
 
 
+def input_check_play_again(decision_local=""):
+    """input_check_play_again() takes a string (player input) and checks the expected format. If the string meets the
+    requirements, it is returned. Otherwise the user is asked repetitively to provide a proper input and runs it against
+    the checks until the input meets the requirements and only then is returned.
+    #TODO it should also with the case when player inputs 'quit'
+    In: str, default = ''
+    Out: str decision that  is either 'Y', 'y', 'N', 'n'"""
+    while decision_local.lower() != "y" and decision_local != "n":
+        decision_local = input("I didn't get it! Would you like to play? Yes or no? (y/n) ")
+    return decision_local
+
+
 def main(game_round, player_name=""):
     if game_round == 'first':
         player_name = greet_player()
@@ -266,6 +278,8 @@ def main(game_round, player_name=""):
     max_wrong_guesses = 42  # Must be every 3
     wrong_guesses = 0  # Starting value
     guess_counter = 0  # Starting value for loop
+
+    # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
         hidden_letters = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
         wrong_guesses = hidden_letters[0]
@@ -276,13 +290,29 @@ def main(game_round, player_name=""):
         print(already_guessed)  # Print already guessed
         print(encoded_word, wrong_guesses)  # Print encoded word
     if wrong_guesses == max_wrong_guesses:
-        decision = input("So sorry, you've failed! The word was %s Do you want to play again? (y/n) "% original_word)
-        if decision == "y":
-            main("fail", player_name)
+        decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) "% original_word)
+        decision = input_check_play_again(decision)
+        try:
+            if decision.lower() == "y":
+                main("fail", player_name)
+            elif decision.lower() == 'n':
+                print("I hope you enjoyed the game! See you next time!")
+            else:
+                raise ValueError
+        except ValueError:
+            input_check_play_again()
     else:
         decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
-        if decision == "y":
-            main("next", player_name)
+        decision = input_check_play_again(decision)
+        try:
+            if decision.lower() == "y":
+                main("next", player_name)
+            elif decision.lower() == 'n':
+                print("Thank you for your time. See you in the next one!")
+            else:
+                raise ValueError
+        except ValueError:
+            input_check_play_again()
 
 
 if __name__ == '__main__':

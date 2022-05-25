@@ -117,16 +117,17 @@ HANGMAN = (
 ----------
 """)
 
-with open("words.txt") as f:
-    words = f.read().splitlines()
 
-
-def get_name():
-    player_name = input("Please enter your name. ")
-    return player_name
+def greet_player():
+    ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
+    print(BColors.OKGREEN + ascii_banner + BColors.ENDC)
+    player_name = input("How can we call you? : ")
+    print("Welcome to Hangman,", player_name + '!')
 
 
 def get_level():
+    print("We are going to draw a country or a capital from a long list for you. ")
+    print("We have divided the words by a number of distinctive letters into 3 groups.")
     print(" 1 - Easy")
     print(" 2 - Medium")
     print(" 3 - Hard")
@@ -150,7 +151,27 @@ def get_level():
     return int(level)
 
 
-def get_word(word_list, level):
+def damage(level):
+    if level == 1:
+        damage_local = 1
+    elif level == 2:
+        damage_local = 3
+    else:
+        damage_local = 6
+    return damage_local
+
+
+def create_word_list(filepath="./countries-and-capitals.txt"):
+    word_list_local = []
+    with open(filepath, newline='') as file:
+        for line in file.read().splitlines():
+            words_local = line.split("|")
+            for word in words_local:
+                word_list_local.append(word.strip())
+    return word_list_local
+
+
+def draw_word_from_list(word_list, level):
     word_number = random.randint(0, len(word_list) - 1)
     word = word_list[word_number].upper()
 
@@ -173,20 +194,6 @@ def get_word(word_list, level):
         return word
 
 
-def damage(level):
-    if level == 1:
-        damage = 1
-    elif level == 2:
-        damage = 3
-    else:
-        damage = 6
-    return damage
-
-
-def get_hangman(max_wrong_guesses):
-    return int(max_wrong_guesses / (len(HANGMAN) - 1))
-
-
 def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
     az_check = string.ascii_letters
     guess = input("Please enter your guess: ")
@@ -205,16 +212,19 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
     return wrong_guesses, encoded_word, already_guessed
 
 
+def get_hangman(max_wrong_guesses, graphics_list):
+    return int(max_wrong_guesses / (len(graphics_list) - 1))
+
+
 def main():
-    ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
-    print(BColors.OKGREEN + ascii_banner + BColors.ENDC)
-    player_name = get_name()
-    print("Welcome to Hangman,", player_name)
+    greet_player()
     level = get_level()
-    word = get_word(words, level)
-    original_word = word
-    encoded_word = re.sub('[0-9a-zA-Z]', '_', word)
-    print(word)  # Print selected word
+    word_base = create_word_list()
+    word_to_guess = draw_word_from_list(word_base, level)
+    original_word = word_to_guess
+    encoded_word = re.sub('[0-9a-zA-Z]', '_', word_to_guess)
+    # TODO: remove `print(word_to_guess)` below (DEBUG ONLY)
+    print(word_to_guess)  # Print selected word
     print(encoded_word)  # Print word with _
     already_guessed = []
     max_wrong_guesses = 42  # Must be every 3
@@ -222,11 +232,11 @@ def main():
     guess_counter = 0  # Starting value for loop
     print(HANGMAN[0])  # Starting Hangman
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
-        hidden_letters = guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
+        hidden_letters = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
         wrong_guesses = hidden_letters[0]
         encoded_word = hidden_letters[1]
         already_guessed = hidden_letters[2]
-        index = int(wrong_guesses / get_hangman(max_wrong_guesses))
+        index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[index])
         print(already_guessed)  # Print already guessed
         print(hidden_letters[1], hidden_letters[0])  # Print encoded word

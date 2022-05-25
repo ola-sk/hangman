@@ -3,6 +3,7 @@ import random
 import pyfiglet
 import re
 import string
+from time import sleep
 
 
 class BColors:
@@ -122,6 +123,10 @@ def greet_player():
     ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
     print(BColors.OKGREEN + ascii_banner + BColors.ENDC)
     player_name = input("How can we call you? : ")
+    if player_name == "quit":
+        print("Goodbye! ")
+        sleep(2)
+        exit()
     print("Welcome to Hangman,", player_name + '!')
     return player_name
 
@@ -160,12 +165,22 @@ def get_level():
     while True:
         try:
             print("Please select level of difficulty: ")
-            level = int(input(""))
+            level = input("")
+            if level == "quit":
+                print("Goodbye! ")
+                sleep(2)
+                exit()
+            level = int(level)
         except ValueError:
             print("Please enter a valid character. ")
             continue
         while level > 3 or level <= 0:
-            level = int(input("You have chosen wrong level, please try again. "))
+            level = input("You have chosen wrong level, please try again. ")
+            if level == "quit":
+                print("Goodbye! ")
+                sleep(2)
+                exit()
+            level = int(level)
         break
 
     if level == 1:
@@ -221,34 +236,40 @@ def draw_word_from_list(word_list, level):
         return word
 
 
-def get_letter_input():
-    az_check = string.ascii_letters
-    letter_guess_local = input("Please enter your guess: ")
-    while len(letter_guess_local) > 1:
-        letter_guess_local = input("Please enter only one character. ")
-    while letter_guess_local not in az_check:
-        letter_guess_local = input("Please use A-Z characters.")
-    return letter_guess_local
-
-
 def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
-    letter_guess = get_letter_input()
-    is_already_guessed = 0
-    for index in range(0, len(word)):
-        if word[index] == letter_guess.upper() or word[index] == letter_guess.lower():
-            if word[index].isupper():
-                letter_guess = letter_guess.upper()
-            elif word[index].islower():
-                letter_guess = letter_guess.lower()
-            encoded_word = encoded_word[0:index] + letter_guess + encoded_word[index + 1:len(word)]
+    az_check = string.ascii_letters
+    guess = input("Please enter your guess: ")
+    if guess == "quit":
+        print("Goodbye! ")
+        sleep(2)
+        exit()
+    while len(guess) > 1:
+        guess = input("Please enter only one character. ")
+        if guess == "quit":
+            print("Goodbye! ")
+            sleep(2)
+            exit()
+    while guess not in az_check:
+        guess = input("Please use A-Z characters.")
+        if guess == "quit":
+            print("Goodbye! ")
+            sleep(2)
+            exit()
+    for letter in range(0, len(word)):
+        if word[letter] == guess.upper() or word[letter] == guess.lower():
+            if word[letter].isupper():
+                guess = guess.upper()
+            elif word[letter].islower():
+                guess = guess.lower()
+            encoded_word = encoded_word[0:letter] + guess + encoded_word[letter + 1:len(word)]
             guess_counter += 1
-    if guess_counter == 0 and letter_guess.upper() not in already_guessed:
-        already_guessed.append(letter_guess.upper())
+    if guess_counter == 0 and guess.upper() not in already_guessed:
+        already_guessed.append(guess.upper())
         wrong_guesses = wrong_guesses + damage(level)
-    elif letter_guess.upper() in already_guessed:
-        is_already_guessed
+    elif guess.upper() in already_guessed:
+        print(BColors.FAIL + "You've already provided that character. " + BColors.ENDC)
 
-    return wrong_guesses, encoded_word, already_guessed, is_already_guessed
+    return wrong_guesses, encoded_word, already_guessed
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -259,11 +280,15 @@ def input_check_play_again(decision_local=""):
     """input_check_play_again() takes a string (player input) and checks the expected format. If the string meets the
     requirements, it is returned. Otherwise the user is asked repetitively to provide a proper input and runs it against
     the checks until the input meets the requirements and only then is returned.
-    # TODO it should also with the case when player inputs 'quit'
+    #TODO it should also with the case when player inputs 'quit'
     In: str, default = ''
     Out: str decision that  is either 'Y', 'y', 'N', 'n'"""
     while decision_local.lower() != "y" and decision_local != "n":
         decision_local = input("I didn't get it! Would you like to play? Yes or no? (y/n) ")
+        if decision_local == "quit":
+            print("Goodbye! ")
+            sleep(2)
+            exit()
     return decision_local
 
 
@@ -289,45 +314,45 @@ def main(game_round, player_name=""):
 
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
-        hidden_letters = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
+        hidden_letters = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter, already_guessed)    
         wrong_guesses = hidden_letters[0]
         encoded_word = hidden_letters[1]
         already_guessed = hidden_letters[2]
-        is_already_guessed = hidden_letters[3]
         hangman_graphics_index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[hangman_graphics_index])
-        print(already_guessed)  # Print already guessed
+        print("Letters you've guessed already:")
+        for i in already_guessed:
+            print(i, " ", end="")
+        print(" ")
         print(encoded_word, wrong_guesses)  # Print encoded word
-        if is_already_guessed == 1:
-            print("You have already tried this letter!")
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
+        if decision == "quit":
+            print("Goodbye! ")
+            sleep(2)
+            exit()
         decision = input_check_play_again(decision)
         try:
             if decision.lower() == "y":
                 main("fail", player_name)
             elif decision.lower() == 'n':
                 print("I hope you enjoyed the game! See you next time!")
-                # TODO: quits
-            elif decision.lower() == "quit":
-                print("Good-bye!")
-                # TODO: quits
             else:
                 raise ValueError
         except ValueError:
             input_check_play_again()
     else:
         decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
+        if decision == "quit":
+            print("Goodbye! ")
+            sleep(2)
+            exit()
         decision = input_check_play_again(decision)
         try:
             if decision.lower() == "y":
                 main("next", player_name)
             elif decision.lower() == 'n':
                 print("Thank you for your time. See you in the next one!")
-                # TODO: quits
-            elif decision.lower() == "quit":
-                print("Good-bye!")
-                # TODO: quits
             else:
                 raise ValueError
         except ValueError:

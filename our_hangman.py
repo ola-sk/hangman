@@ -274,7 +274,7 @@ def main(game_round, player_name=""):
         hangman_graphics_index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[hangman_graphics_index])
         print(already_guessed)  # Print already guessed
-        print(hidden_letters[1], hidden_letters[0])  # Print encoded word
+        print(encoded_word, wrong_guesses)  # Print encoded word
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s Do you want to play again? (y/n) "% original_word)
         if decision == "y":

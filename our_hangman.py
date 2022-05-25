@@ -200,24 +200,24 @@ def create_word_list(filepath="./countries-and-capitals.txt"):
 def draw_word_from_list(word_list, level):
     random.seed()
     word_number = random.randint(0, len(word_list) - 1)
-    word = word_list[word_number].upper()
+    word = word_list[word_number]
 
     if level == 1:
         while len(word) > 5:
             word_number = random.randint(0, len(word_list) - 1)
-            word = word_list[word_number].upper()
+            word = word_list[word_number]
         return word
 
     elif level == 2:
         while len(word) <= 5 or len(word) > 8:
             word_number = random.randint(0, len(word_list) - 1)
-            word = word_list[word_number].upper()
+            word = word_list[word_number]
         return word
 
     else:
         while len(word) <= 8:
             word_number = random.randint(0, len(word_list) - 1)
-            word = word_list[word_number].upper()
+            word = word_list[word_number]
         return word
 
 
@@ -254,6 +254,7 @@ def main(game_round, player_name=""):
     word_base = create_word_list()
     word_to_guess = draw_word_from_list(word_base, level)
     original_word = word_to_guess
+    word_to_guess = word_to_guess.upper()
     encoded_word = re.sub('[0-9a-zA-Z]', '_', word_to_guess)
     # print(word_to_guess)  # Print selected word
     print(HANGMAN[0])  # Starting Hangman
@@ -272,7 +273,7 @@ def main(game_round, player_name=""):
         print(already_guessed)  # Print already guessed
         print(hidden_letters[1], hidden_letters[0])  # Print encoded word
     if wrong_guesses == max_wrong_guesses:
-        decision = input("So sorry, you've failed! Do you want to play again? (y/n) ")
+        decision = input("So sorry, you've failed! The word was %s Do you want to play again? (y/n) "% original_word)
         if decision == "y":
             main("fail", player_name)
     else:

@@ -123,7 +123,7 @@ def greet_player():
     ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
     print(BColors.OKGREEN + ascii_banner + BColors.ENDC)
     player_name = input("How can we call you? : ")
-    if player_name == "quit":
+    if player_name.upper().lower() == "quit":
         print("Goodbye! ")
         sleep(2)
         exit()
@@ -166,7 +166,7 @@ def get_level():
         try:
             print("Please select level of difficulty: ")
             level = input("")
-            if level == "quit":
+            if level.upper().lower() == "quit":
                 print("Goodbye! ")
                 sleep(2)
                 exit()
@@ -176,7 +176,7 @@ def get_level():
             continue
         while level > 3 or level <= 0:
             level = input("You have chosen wrong level, please try again. ")
-            if level == "quit":
+            if level.upper().lower() == "quit":
                 print("Goodbye! ")
                 sleep(2)
                 exit()
@@ -239,19 +239,19 @@ def draw_word_from_list(word_list, level):
 def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
     az_check = string.ascii_letters
     guess = input("Please enter your guess: ")
-    if guess == "quit":
+    if guess.upper().lower() == "quit":
         print("Goodbye! ")
         sleep(2)
         exit()
     while len(guess) > 1:
         guess = input("Please enter only one character. ")
-        if guess == "quit":
+        if guess.upper().lower() == "quit":
             print("Goodbye! ")
             sleep(2)
             exit()
     while guess not in az_check:
         guess = input("Please use A-Z characters.")
-        if guess == "quit":
+        if guess.upper().lower() == "quit":
             print("Goodbye! ")
             sleep(2)
             exit()
@@ -327,7 +327,7 @@ def main(game_round, player_name=""):
         print(encoded_word, wrong_guesses)  # Print encoded word
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
-        if decision == "quit":
+        if decision.upper().lower() == "quit":
             print("Goodbye! ")
             sleep(2)
             exit()
@@ -343,7 +343,7 @@ def main(game_round, player_name=""):
             input_check_play_again()
     else:
         decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
-        if decision == "quit":
+        if decision.upper().lower() == "quit":
             print("Goodbye! ")
             sleep(2)
             exit()

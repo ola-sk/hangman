@@ -237,9 +237,8 @@ def draw_word_from_list(word_list, level):
         return word
 
 
-def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
+def validate_input():
     az_check = string.ascii_letters
-    is_tried = 0
     guess = input("Please enter your guess: ")
     if guess.upper().lower() == "quit":
         goodbye()
@@ -251,6 +250,12 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
         guess = input("Please use A-Z characters.")
         if guess.upper().lower() == "quit":
             goodbye()
+    return guess
+
+
+def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
+    guess = validate_input()
+    was_tried_by_user = 0
     for letter in range(0, len(word)):
         if word[letter] == guess.upper() or word[letter] == guess.lower():
             if word[letter].isupper():
@@ -263,10 +268,9 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
         already_guessed.append(guess.upper())
         wrong_guesses = wrong_guesses + damage(level)
     elif guess.upper() in already_guessed:
-        is_tried = 1
+        was_tried_by_user = 1
 
-
-    return wrong_guesses, encoded_word, already_guessed, is_tried
+    return wrong_guesses, encoded_word, already_guessed, was_tried_by_user
 
 
 def get_hangman(max_wrong_guesses, graphics_list):

@@ -308,17 +308,20 @@ def main(game_round, player_name=""):
 
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
-        hidden_letters = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter, already_guessed)    
-        wrong_guesses = hidden_letters[0]
-        encoded_word = hidden_letters[1]
-        already_guessed = hidden_letters[2]
+        game_state_tuple = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter,
+                                        already_guessed)
+        wrong_guesses = game_state_tuple[0]
+        encoded_word = game_state_tuple[1]
+        already_guessed = game_state_tuple[2]
         hangman_graphics_index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[hangman_graphics_index])
-        print("Letters you've guessed already:")
+        print("Letters you've guessed wrong:")
         for i in already_guessed:
-            print(i, " ", end="")
+            print(BColors.WARNING + i, " " + BColors.ENDC, end="")
         print(" ")
-        print(encoded_word, wrong_guesses)  # Print encoded word
+        # Print encoded word
+        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + " your damage: ", str(wrong_guesses) +
+              BColors.ENDC)
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
         if decision.upper().lower() == "quit":

@@ -239,6 +239,7 @@ def draw_word_from_list(word_list, level):
 
 def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
     az_check = string.ascii_letters
+    is_tried = 0
     guess = input("Please enter your guess: ")
     if guess.upper().lower() == "quit":
         goodbye()
@@ -262,9 +263,10 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
         already_guessed.append(guess.upper())
         wrong_guesses = wrong_guesses + damage(level)
     elif guess.upper() in already_guessed:
-        print(BColors.FAIL + "You've already provided that character. " + BColors.ENDC)
+        is_tried = 1
 
-    return wrong_guesses, encoded_word, already_guessed
+
+    return wrong_guesses, encoded_word, already_guessed, is_tried
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -313,15 +315,19 @@ def main(game_round, player_name=""):
         wrong_guesses = game_state_tuple[0]
         encoded_word = game_state_tuple[1]
         already_guessed = game_state_tuple[2]
+        is_tried_message = game_state_tuple[3]
         hangman_graphics_index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[hangman_graphics_index])
+
         print("Letters you've guessed wrong:")
         for i in already_guessed:
             print(BColors.WARNING + i, " " + BColors.ENDC, end="")
         print(" ")
         # Print encoded word
-        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + " your damage: ", str(wrong_guesses) +
+        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tyour damage: ", str(wrong_guesses) +
               BColors.ENDC)
+        if is_tried_message:
+            print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
         if decision.upper().lower() == "quit":

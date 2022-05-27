@@ -129,6 +129,7 @@ def greet_player():
     print("Welcome to Hangman,", player_name + '!')
     return player_name
 
+
 def goodbye():
     goodbye = pyfiglet.figlet_format("Goodbye!")
     slowprint(BColors.WARNING + goodbye + BColors.ENDC, 0.01)
@@ -142,7 +143,7 @@ def welcome_back(player_name, is_win):
     if is_win == 0:
         if random_message_index == 0:
             print(BColors.OKCYAN + "Welcome back",
-                  player_name + "! Let's try again! Try to save the man from cruelty!", + BColors.ENDC)
+                  player_name + "! Let's try again! Try to save the man from cruelty!" + BColors.ENDC)
         elif random_message_index == 1:
             print(BColors.OKCYAN + "If you don't try, you never fail", player_name + "!" + BColors.ENDC)
         elif random_message_index == 2:
@@ -271,17 +272,18 @@ def get_hangman(max_wrong_guesses, graphics_list):
 
 
 def input_check_play_again(decision_local=""):
-    """input_check_play_again() takes a string (player input) and checks the expected format. If the string meets the
-    requirements, it is returned. Otherwise the user is asked repetitively to provide a proper input and runs it against
+    """input_check_play_again() takes a string (player input) and checks if it is of the expected format.
+    If the string meets the requirements, it is returned.
+    Otherwise the user is asked repetitively to provide a proper input and runs it against
     the checks until the input meets the requirements and only then is returned.
-    #TODO it should also with the case when player inputs 'quit'
+
     In: str, default = ''
     Out: str decision that  is either 'Y', 'y', 'N', 'n'"""
     while decision_local.lower() != "y" and decision_local != "n":
         decision_local = input("I didn't get it! Would you like to play? Yes or no? (y/n) ")
-        if decision_local == "quit":
+        if decision_local.upper().lower() == "quit":
             goodbye()
-    return decision_local
+    return decision_local.lower()
 
 
 def main(game_round, player_name=""):
@@ -346,5 +348,7 @@ def main(game_round, player_name=""):
         except ValueError:
             input_check_play_again()
 
+
 if __name__ == '__main__':
     main("first")
+

@@ -131,8 +131,8 @@ def greet_player():
 
 
 def goodbye():
-    goodbye = pyfiglet.figlet_format("Goodbye!")
-    slowprint(BColors.WARNING + goodbye + BColors.ENDC, 0.01)
+    goodbye_anim = pyfiglet.figlet_format("Goodbye!")
+    slowprint(BColors.WARNING + goodbye_anim + BColors.ENDC, 0.01)
     exit()
 
 
@@ -351,4 +351,3 @@ def main(game_round, player_name=""):
 
 if __name__ == '__main__':
     main("first")
-

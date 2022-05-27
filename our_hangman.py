@@ -255,11 +255,9 @@ def validate_input():
 
 def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
     guess = validate_input()
-    was_tried_by_user = 0
     if guess.upper() in already_guessed:
         print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
         guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
-        # was_tried_by_user = 1
     else:
         for letter in range(0, len(word)):
             if word[letter] == guess.upper() or word[letter] == guess.lower():
@@ -273,7 +271,7 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
             already_guessed.append(guess.upper())
             wrong_guesses = wrong_guesses + damage(level)
 
-        return wrong_guesses, encoded_word, already_guessed#, was_tried_by_user
+        return wrong_guesses, encoded_word, already_guessed
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -322,10 +320,8 @@ def main(game_round, player_name=""):
         wrong_guesses = game_state_tuple[0]
         encoded_word = game_state_tuple[1]
         already_guessed = game_state_tuple[2]
-        # is_tried_message = game_state_tuple[3]
         hangman_graphics_index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[hangman_graphics_index])
-
         print("Letters you've guessed wrong:")
         for i in already_guessed:
             print(BColors.WARNING + i, " " + BColors.ENDC, end="")
@@ -333,8 +329,6 @@ def main(game_round, player_name=""):
         # Print encoded word
         print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tyour damage: ", str(wrong_guesses) + "/" +
               str(max_wrong_guesses) + BColors.ENDC)
-        # if is_tried_message:
-        #     print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
         if decision.upper().lower() == "quit":

@@ -324,8 +324,8 @@ def main(game_round, player_name=""):
             print(BColors.WARNING + i, " " + BColors.ENDC, end="")
         print(" ")
         # Print encoded word
-        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tyour damage: ", str(wrong_guesses) +
-              BColors.ENDC)
+        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tyour damage: ", str(wrong_guesses) + "/" +
+              str(max_wrong_guesses) + BColors.ENDC)
         if is_tried_message:
             print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
     if wrong_guesses == max_wrong_guesses:

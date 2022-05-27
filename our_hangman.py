@@ -4,6 +4,7 @@ import pyfiglet
 import re
 import string
 from time import sleep
+from slowprint.slowprint import *
 
 
 class BColors:
@@ -121,14 +122,17 @@ HANGMAN = (
 
 def greet_player():
     ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
-    print(BColors.OKGREEN + ascii_banner + BColors.ENDC)
+    slowprint(BColors.OKGREEN + ascii_banner + BColors.ENDC, 0.01)
     player_name = input("How can we call you? : ")
     if player_name.upper().lower() == "quit":
-        print("Goodbye! ")
-        sleep(2)
-        exit()
+        goodbye()
     print("Welcome to Hangman,", player_name + '!')
     return player_name
+
+def goodbye():
+    goodbye = pyfiglet.figlet_format("Goodbye!")
+    slowprint(BColors.WARNING + goodbye + BColors.ENDC, 0.01)
+    exit()
 
 
 def welcome_back(player_name, is_win):
@@ -138,7 +142,7 @@ def welcome_back(player_name, is_win):
     if is_win == 0:
         if random_message_index == 0:
             print(BColors.OKCYAN + "Welcome back",
-                  player_name + "! Let's try again! Try to save the man from cruelty!" + BColors.ENDC)
+                  player_name + "! Let's try again! Try to save the man from cruelty!", + BColors.ENDC)
         elif random_message_index == 1:
             print(BColors.OKCYAN + "If you don't try, you never fail", player_name + "!" + BColors.ENDC)
         elif random_message_index == 2:
@@ -167,9 +171,7 @@ def get_level():
             print("Please select level of difficulty: ")
             level = input("")
             if level.upper().lower() == "quit":
-                print("Goodbye! ")
-                sleep(2)
-                exit()
+                goodbye()
             level = int(level)
         except ValueError:
             print("Please enter a valid character. ")
@@ -177,9 +179,7 @@ def get_level():
         while level > 3 or level <= 0:
             level = input("You have chosen wrong level, please try again. ")
             if level.upper().lower() == "quit":
-                print("Goodbye! ")
-                sleep(2)
-                exit()
+                goodbye()
             level = int(level)
         break
 
@@ -240,21 +240,15 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
     az_check = string.ascii_letters
     guess = input("Please enter your guess: ")
     if guess.upper().lower() == "quit":
-        print("Goodbye! ")
-        sleep(2)
-        exit()
+        goodbye()
     while len(guess) > 1:
         guess = input("Please enter only one character. ")
         if guess.upper().lower() == "quit":
-            print("Goodbye! ")
-            sleep(2)
-            exit()
+            goodbye()
     while guess not in az_check:
         guess = input("Please use A-Z characters.")
         if guess.upper().lower() == "quit":
-            print("Goodbye! ")
-            sleep(2)
-            exit()
+            goodbye()
     for letter in range(0, len(word)):
         if word[letter] == guess.upper() or word[letter] == guess.lower():
             if word[letter].isupper():
@@ -286,9 +280,7 @@ def input_check_play_again(decision_local=""):
     while decision_local.lower() != "y" and decision_local != "n":
         decision_local = input("I didn't get it! Would you like to play? Yes or no? (y/n) ")
         if decision_local == "quit":
-            print("Goodbye! ")
-            sleep(2)
-            exit()
+            goodbye()
     return decision_local
 
 
@@ -328,9 +320,7 @@ def main(game_round, player_name=""):
     if wrong_guesses == max_wrong_guesses:
         decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
         if decision.upper().lower() == "quit":
-            print("Goodbye! ")
-            sleep(2)
-            exit()
+            goodbye()
         decision = input_check_play_again(decision)
         try:
             if decision.lower() == "y":
@@ -344,9 +334,7 @@ def main(game_round, player_name=""):
     else:
         decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
         if decision.upper().lower() == "quit":
-            print("Goodbye! ")
-            sleep(2)
-            exit()
+            goodbye()
         decision = input_check_play_again(decision)
         try:
             if decision.lower() == "y":
@@ -357,9 +345,6 @@ def main(game_round, player_name=""):
                 raise ValueError
         except ValueError:
             input_check_play_again()
-#TEST COMMIT ON VSC
 
 if __name__ == '__main__':
     main("first")
-
-# TODO: rozważ przypadek, gdzie wpiszemy spację jako zgadywaną literę. Obecnie wlicza spację, chcemy nie wliczać

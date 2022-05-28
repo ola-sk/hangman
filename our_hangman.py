@@ -122,7 +122,7 @@ HANGMAN = (
 
 def greet_player():
     ascii_banner = pyfiglet.figlet_format("Welcome to Hangman!")
-    slowprint(BColors.OKGREEN + ascii_banner + BColors.ENDC, 0.01)
+    #slowprint(BColors.OKGREEN + ascii_banner + BColors.ENDC, 0.01)
     player_name = input("How can we call you? : ")
     if player_name.upper().lower() == "quit":
         goodbye()
@@ -254,24 +254,21 @@ def validate_input():
 
 def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed: set):
     guess = validate_input()
-    if guess.upper() in already_guessed:
+    while guess.upper() in already_guessed:
         print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
-        guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed)
-    else:
-        for letter in range(0, len(word)):
-            if word[letter] == guess.upper() or word[letter] == guess.lower():
-                if word[letter].isupper():
-                    guess = guess.upper()
-                elif word[letter].islower():
-                    guess = guess.lower()
-                encoded_word = encoded_word[0:letter] + guess + encoded_word[letter + 1:len(word)]
-                guess_counter += 1
-        if guess_counter == 0 and guess.upper() not in already_guessed:
-            already_guessed.add(guess.upper())
-            # already_guessed.append(guess.upper())
-            wrong_guesses = wrong_guesses + damage(level)
-
-        return wrong_guesses, encoded_word, already_guessed
+        guess = validate_input()
+    for letter in range(0, len(word)):
+        if word[letter] == guess.upper() or word[letter] == guess.lower():
+            if word[letter].isupper():
+                guess = guess.upper()
+            elif word[letter].islower():
+                guess = guess.lower()
+            encoded_word = encoded_word[0:letter] + guess + encoded_word[letter + 1:len(word)]
+            guess_counter += 1
+    if guess_counter == 0 and guess.upper() not in already_guessed:
+        already_guessed.add(guess.upper())
+        wrong_guesses = wrong_guesses + damage(level)
+    return wrong_guesses, encoded_word, already_guessed
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -316,7 +313,6 @@ def main(game_round, player_name=""):
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
         # TODO: introduce exception handling, e.g. if game_state_tuple doesn't get the return values assigned correctly
-        # TODO: Handle: wrong_guesses = game_state_tuple[0]; TypeError: 'NoneType' object is not subscriptable
         game_state_tuple = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter,
                                         already_guessed_set)
         wrong_guesses = game_state_tuple[0]

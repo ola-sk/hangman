@@ -242,18 +242,17 @@ def validate_input():
     guess = input("Please enter your guess: ")
     if guess.upper().lower() == "quit":
         goodbye()
-    while len(guess) > 1:
-        guess = input("Please enter only one character. ")
-        if guess.upper().lower() == "quit":
-            goodbye()
-    while guess not in az_check:
-        guess = input("Please use A-Z characters.")
-        if guess.upper().lower() == "quit":
-            goodbye()
+    else:
+        while len(guess) > 1:
+            print("Please enter only one character. ")
+            guess = validate_input()
+        while guess not in az_check:
+            print("Please use A-Z characters. ")
+            guess = validate_input()
     return guess
 
 
-def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed):
+def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_guessed: set):
     guess = validate_input()
     if guess.upper() in already_guessed:
         print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
@@ -268,7 +267,8 @@ def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, alread
                 encoded_word = encoded_word[0:letter] + guess + encoded_word[letter + 1:len(word)]
                 guess_counter += 1
         if guess_counter == 0 and guess.upper() not in already_guessed:
-            already_guessed.append(guess.upper())
+            already_guessed.add(guess.upper())
+            # already_guessed.append(guess.upper())
             wrong_guesses = wrong_guesses + damage(level)
 
         return wrong_guesses, encoded_word, already_guessed
@@ -308,22 +308,24 @@ def main(game_round, player_name=""):
     # print(word_to_guess)  # Print selected word
     print(HANGMAN[0])  # Starting Hangman
     print(encoded_word)  # Print word with _
-    already_guessed = []
+    already_guessed_set = set()
     max_wrong_guesses = 42  # Must be every 3
     wrong_guesses = 0  # Starting value
     guess_counter = 0  # Starting value for loop
 
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
+        # TODO: introduce exception handling, e.g. if game_state_tuple doesn't get the return values assigned correctly
+        # TODO: Handle: wrong_guesses = game_state_tuple[0]; TypeError: 'NoneType' object is not subscriptable
         game_state_tuple = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter,
-                                        already_guessed)
+                                        already_guessed_set)
         wrong_guesses = game_state_tuple[0]
         encoded_word = game_state_tuple[1]
-        already_guessed = game_state_tuple[2]
+        already_guessed_set = game_state_tuple[2]
         hangman_graphics_index = int(wrong_guesses / get_hangman(max_wrong_guesses, HANGMAN))
         print(HANGMAN[hangman_graphics_index])
         print("Letters you've guessed wrong:")
-        for i in already_guessed:
+        for i in already_guessed_set:
             print(BColors.WARNING + i, " " + BColors.ENDC, end="")
         print(" ")
         # Print encoded word

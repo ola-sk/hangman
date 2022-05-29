@@ -1,9 +1,7 @@
-from ast import AnnAssign
 import random
 import pyfiglet
 import re
 import string
-from time import sleep
 from slowprint.slowprint import *
 
 
@@ -18,8 +16,6 @@ class BColors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-
-# print(BColors.FAIL + "Example text" + BColors.ENDC)
 
 HANGMAN = (
     """
@@ -161,7 +157,7 @@ def welcome_back(player_name, is_win):
                   player_name + "! Please be quick!" + BColors.ENDC)
 
 
-def get_level():
+def get_level(level=""):
     print("\nWe are going to draw a country or a capital from a long list for you. ")
     print("We have divided the words by a number of distinctive letters into 3 groups.")
     print(" 1 - Easy")
@@ -178,10 +174,8 @@ def get_level():
             print("Please enter a valid character. ")
             continue
         while level > 3 or level <= 0:
-            level = input("You have chosen wrong level, please try again. ")
-            if level.upper().lower() == "quit":
-                goodbye()
-            level = int(level)
+            level = input("You have chosen wrong level, try again. ")
+            continue
         break
 
     if level == 1:
@@ -193,10 +187,10 @@ def get_level():
     return int(level)
 
 
-def damage(level):
-    if level == 1:
+def damage(level_local):
+    if level_local == 1:
         damage_local = 1
-    elif level == 2:
+    elif level_local == 2:
         damage_local = 3
     else:
         damage_local = 6
@@ -213,18 +207,18 @@ def create_word_list(filepath="./countries-and-capitals.txt"):
     return word_list_local
 
 
-def draw_word_from_list(word_list, level):
+def draw_word_from_list(word_list, level_local):
     random.seed()
     word_number = random.randint(0, len(word_list) - 1)
     word = word_list[word_number]
 
-    if level == 1:
+    if level_local == 1:
         while len(word) > 5:
             word_number = random.randint(0, len(word_list) - 1)
             word = word_list[word_number]
         return word
 
-    elif level == 2:
+    elif level_local == 2:
         while len(word) <= 5 or len(word) > 8:
             word_number = random.randint(0, len(word_list) - 1)
             word = word_list[word_number]
@@ -252,27 +246,23 @@ def validate_input():
     return guess
 
 
-def guess_letter(word, encoded_word, level, wrong_guesses, guess_counter, already_tried_letters_local: set):
+def guess_letter(word, encoded_word, level_local, wrong_guesses, guess_counter, already_tried_letters_local: set):
     guess = validate_input()
     while guess.upper() in already_tried_letters_local or guess.upper() in encoded_word.upper():
         print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
-        # FOR DEBUG:
-        # print(BColors.WARNING + "DEBUG: The word is " + word + "; already_tried_letters_local (from inside `guess_letter()`):",
-        #       already_tried_letters_local, " " + BColors.ENDC)
         guess = validate_input()
-    else:
-        for letter_index in range(0, len(word)):
-            if word[letter_index] == guess.upper() or word[letter_index] == guess.lower():
-                if word[letter_index].isupper():
-                    guess = guess.upper()
-                elif word[letter_index].islower():
-                    guess = guess.lower()
-                encoded_word = encoded_word[0:letter_index] + guess + encoded_word[letter_index + 1:len(word)]
-                guess_counter += 1
-        if guess_counter == 0 and guess.upper() not in already_tried_letters_local:
-            already_tried_letters_local.add(guess.upper())
-            wrong_guesses = wrong_guesses + damage(level)
-        return wrong_guesses, encoded_word, already_tried_letters_local
+    for letter_index in range(0, len(word)):
+        if word[letter_index] == guess.upper() or word[letter_index] == guess.lower():
+            if word[letter_index].isupper():
+                guess = guess.upper()
+            elif word[letter_index].islower():
+                guess = guess.lower()
+            encoded_word = encoded_word[0:letter_index] + guess + encoded_word[letter_index + 1:len(word)]
+            guess_counter += 1
+    if guess_counter == 0 and guess.upper() not in already_tried_letters_local:
+        already_tried_letters_local.add(guess.upper())
+        wrong_guesses = wrong_guesses + damage(level_local)
+    return wrong_guesses, encoded_word, already_tried_letters_local
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -331,34 +321,36 @@ def main(game_round, player_name=""):
         # Print encoded word
         print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tyour damage: ", str(wrong_guesses) + "/" +
               str(max_wrong_guesses) + BColors.ENDC)
-    if wrong_guesses == max_wrong_guesses:
-        decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) " % original_word)
-        if decision.upper().lower() == "quit":
-            goodbye()
-        decision = input_check_play_again(decision)
-        try:
-            if decision.lower() == "y":
-                main("fail", player_name)
-            elif decision.lower() == 'n':
-                print("I hope you enjoyed the game! See you next time!")
-            else:
-                raise ValueError
-        except ValueError:
-            input_check_play_again()
     else:
-        decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
-        if decision.upper().lower() == "quit":
-            goodbye()
-        decision = input_check_play_again(decision)
-        try:
-            if decision.lower() == "y":
-                main("next", player_name)
-            elif decision.lower() == 'n':
-                print("Thank you for your time. See you in the next one!")
-            else:
-                raise ValueError
-        except ValueError:
-            input_check_play_again()
+        if wrong_guesses >= max_wrong_guesses:
+            decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) "
+                             % original_word)
+            if decision.upper().lower() == "quit":
+                goodbye()
+            decision = input_check_play_again(decision)
+            try:
+                if decision.lower() == "y":
+                    main("fail", player_name)
+                elif decision.lower() == 'n':
+                    print("I hope you enjoyed the game! See you next time!")
+                else:
+                    raise ValueError
+            except ValueError:
+                input_check_play_again()
+        else:
+            decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
+            if decision.upper().lower() == "quit":
+                goodbye()
+            decision = input_check_play_again(decision)
+            try:
+                if decision.lower() == "y":
+                    main("next", player_name)
+                elif decision.lower() == 'n':
+                    print("Thank you for your time. See you in the next one!")
+                else:
+                    raise ValueError
+            except ValueError:
+                input_check_play_again()
 
 
 if __name__ == '__main__':
